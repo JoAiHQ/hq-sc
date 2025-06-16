@@ -13,7 +13,7 @@ pub trait Hq {
 
     #[payable("*")]
     #[endpoint(burnForCredits)]
-    fn burn_for_credits_endpoint(&self) {
+    fn burn_for_credits_endpoint(&self, team: ManagedBuffer) {
         let caller = self.blockchain().get_caller();
         let payment = self.call_value().single_esdt().clone();
 
@@ -23,9 +23,9 @@ pub trait Hq {
             .esdt_local_burn(&payment.token_identifier, payment.token_nonce, &payment.amount)
             .sync_call();
 
-        self.credits_added_event(&caller, &payment.token_identifier, &payment.amount);
+        self.credits_added_event(&caller, &team, &payment.token_identifier, &payment.amount);
     }
 
     #[event("creditsAdded")]
-    fn credits_added_event(&self, #[indexed] caller: &ManagedAddress, #[indexed] token: &TokenIdentifier, #[indexed] amount: &BigUint);
+    fn credits_added_event(&self, #[indexed] caller: &ManagedAddress, #[indexed] team: &ManagedBuffer, #[indexed] token: &TokenIdentifier, #[indexed] amount: &BigUint);
 }
